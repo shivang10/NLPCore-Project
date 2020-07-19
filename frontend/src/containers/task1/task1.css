@@ -1,0 +1,92 @@
+.yearRange{
+    margin: 0 20%;
+}
+
+.yearRange h2{
+    text-align: center;
+    padding: 1em;
+}
+
+.yearRange form{
+    width: 100%;
+    display: inline-block;
+}
+
+.yearInputs{
+    margin: 0 32%;
+    padding: 0.5em;
+    display: flex;
+    flex-direction: row;
+}
+
+.yearNumber{
+    padding: 0.5em;
+}
+
+.yearNumber input{
+    width: 45%;
+    font-size: 1.4em;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid black;
+    outline: none;
+}
+
+.yearSubmit input[type="submit"]{
+    margin: 0 41%;
+    font-size: 1.2em;
+    border-radius: 10px;
+    width: 8em;
+}
+
+.yearSubmit input[type="submit"]:hover{
+    cursor: pointer;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.booksYear h2{
+    color: black;
+}
+
+.booksDisplay{
+    margin: 1em 2em;
+}
+
+.booksDisplay h2{
+    text-align: center;
+}
+
+.booksDisplay #bookHeading{
+    margin: 1em;
+}
+
+.grid-container {
+    margin: 0.5em;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    padding: 5px;
+}
+.grid-item {
+    margin: 5px;
+    padding: 10px;
+    font-size: 18px;
+    text-align: center;
+    background: #fff;
+    border-radius: 7px;
+    box-shadow: 0 2px 5px #a0a0a0;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.errorDisplay{
+    text-align: center;
+}
+
+.errorDisplay p{
+    font-size: 3em;
+    font-weight: bolder;
+}
