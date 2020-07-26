@@ -1,5 +1,5 @@
 const express = require('express');
-const fs = require('fs');
+const { promises: fs } = require('fs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -7,40 +7,42 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const dir = '../wikipages/data/';
+const directory = '../wikipages/data/';
 
-let filenames = [];
-let jsonData = [];
-let year1, year2;
-let inputAttribute, inputValue;
-let count = 0;
-let numberOfTopAttributes;
+let fileNameNumber = [];
+let fileNames = [];
+let dataset = [];
+let year1, year2, inputAttribute, inputValue, numberOfTopAttributes;
 
-
-fs.readdir(dir, (error, filenames) => {
-    if (error) throw error;
-    filenames.forEach(filename => {
-        fs.readFile(dir + filename, callback(filename));
-    });
-});
-
-function callback(file) {
-    filenames.push([count, file]);
-    count++;
-    return function (err, stats) {
-        if (err) throw err;
-        const data = JSON.parse(stats);
-        jsonData.push(data);
+async function readingFileData(filePath) {
+    try {
+        let newFileData = await fs.readFile(filePath);
+        dataset.push(JSON.parse(newFileData));
+    } catch{
+        console.log('File reading error');
     }
 }
 
+async function readingDirectory(directory) {
+    try {
+        fileNames = await fs.readdir(directory);
+        fileNames.map(file => {
+            let fileNumber = parseInt(file.split('.')[0]);
+            fileNameNumber.push([fileNumber, file]);
+            readingFileData(directory + file)
+        })
+    } catch{
+        console.log('Error');
+    }
+}
+
+readingDirectory(directory);
+
 const task1 = () => {
     let titlesPublished = {};
-    jsonData.map(book => {
+    dataset.map(book => {
         let timePublished = parseInt(book["time_published"].slice(0, 4));
         if (timePublished >= year1 && timePublished <= year2) {
             if (timePublished in titlesPublished) {
@@ -58,7 +60,7 @@ const task2 = () => {
     let j = -1;
     let documentNumber = {};
     let sectionNumber = {};
-    jsonData.map(book => {
+    dataset.map(book => {
         i++;
         if ("sections" in book) {
             book["sections"].map(eachSection => {
@@ -69,7 +71,6 @@ const task2 = () => {
                             attribute["values"].map(singleAttribute => {
                                 if ("name" in singleAttribute) {
                                     let currentAttributeName = (singleAttribute["name"]).toLowerCase();
-                                    let currentAttributeValue = (singleAttribute["value"]).toLowerCase();
 
                                     if (currentAttributeName in sectionNumber) {
                                         let tmpSize = sectionNumber[currentAttributeName].length;
@@ -88,12 +89,6 @@ const task2 = () => {
                                     } else {
                                         documentNumber[currentAttributeName] = [i];
                                     }
-
-                                    // if (currentAttributeName in attributesDescription) {
-                                    //     attributesDescription[currentAttributeName].push(currentAttributeValue);
-                                    // } else {
-                                    //     attributesDescription[currentAttributeName] = [currentAttributeValue];
-                                    // }
                                 }
                             })
                         }
@@ -103,13 +98,6 @@ const task2 = () => {
         }
     })
 
-    // for (attribute in attributesDescription) {
-    //     topAttributes.push([attribute, attributesDescription[attribute].length]);
-    // }
-    // topAttributes.sort(function (a1, a2) {
-    //     return a2[1] - a1[1];
-    // })
-
     return documentNumber;
 }
 
@@ -117,12 +105,11 @@ const task3 = () => {
 
     let docNumber = new Set();
     let secNumber = new Set();
-    let i = -1, j = -1;
-    jsonData.map(book => {
+    let i = -1;
+    dataset.map(book => {
         i++;
         if ("sections" in book) {
             book["sections"].map(eachSection => {
-                j++;
                 if ("attributes" in eachSection) {
                     eachSection["attributes"].map(attribute => {
                         if ("values" in attribute) {
@@ -131,7 +118,7 @@ const task3 = () => {
                                     let currentAttributeName = (singleAttribute["name"]).toLowerCase();
                                     let currentAttributeValue = (singleAttribute["value"]).toLowerCase();
                                     if (currentAttributeValue == inputValue && currentAttributeName == inputAttribute) {
-                                        docNumber.add(filenames[i][1]);
+                                        docNumber.add(fileNameNumber[i][1]);
                                         secNumber.add(eachSection);
                                     }
                                 }
@@ -156,7 +143,7 @@ const task4 = () => {
     let attributesDescription = {};
     let topAttributes = [];
 
-    jsonData.map(book => {
+    dataset.map(book => {
         if ("sections" in book) {
             book["sections"].map(eachSection => {
                 if ("attributes" in eachSection) {
@@ -234,7 +221,7 @@ app.post('/task4input', (req, res) => {
 })
 
 app.get('/', function (req, res) {
-    res.send(jsonData);
+    res.send(fileNameNumber);
 })
 
 
